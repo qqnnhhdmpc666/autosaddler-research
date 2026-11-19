@@ -116,7 +116,7 @@ def main():
     run_dir = (config_path.parent / config["storage"]["run_root"]).resolve() / args.run_id
     receipt = {
         "experiment_id": args.run_id,
-        "method": "autosaddler-v2-official",
+        "method": "autosaddler-v2-fair",
         "profile": args.profile,
         "source_commit": source_commit,
         "config_sha256": sha256(config_bytes).hexdigest(),

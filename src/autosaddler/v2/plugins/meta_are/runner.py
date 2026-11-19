@@ -308,6 +308,9 @@ class MetaARERunner:
         )
         if self.judge_endpoint is not None:
             values.extend(("--judge_endpoint", self.judge_endpoint))
+        hook_config = project_root / "hook.json"
+        if hook_config.is_file():
+            values.extend(("--hook-config", str(hook_config)))
         return tuple(values)
 
     def _stage_responses_runtime(self, attempt_dir: Path) -> Path | None:

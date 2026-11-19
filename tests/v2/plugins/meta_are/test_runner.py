@@ -19,8 +19,9 @@ class MaterializedCandidate:
         self.released = True
 
 
-def test_runner_uses_pinned_uv_argv_local_environment_and_releases_candidate(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+@pytest.mark.parametrize("wire_api", ["chat_completions", "responses"])
+def test_runner_uses_candidate_hook_and_releases_candidate(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, wire_api: str
 ) -> None:
     from autosaddler.v2.plugins.meta_are.runner import MetaARERunner
     from autosaddler.v2.plugins.meta_are.responses_runtime import (
@@ -34,6 +35,8 @@ def test_runner_uses_pinned_uv_argv_local_environment_and_releases_candidate(
     demo.mkdir()
     candidate = tmp_path / "candidate"
     candidate.mkdir()
+    hook_config = candidate / "hook.json"
+    hook_config.write_text('{"hooks":{"PreToolUse":[]}}\n', encoding="utf-8")
     materialized = MaterializedCandidate(candidate)
     case_file = tmp_path / "case.json"
     case_file.write_text('{"id":"case-a"}\n')
@@ -47,12 +50,16 @@ def test_runner_uses_pinned_uv_argv_local_environment_and_releases_candidate(
         )
         assert isinstance(argv, tuple)
         assert argv[:4] == ("uv", "run", "--project", str(candidate))
-        runtime_path = Path(argv[argv.index("python") + 1])
-        assert runtime_path == tmp_path / "attempt/runtime/responses_runtime.py"
-        assert sha256_digest(runtime_path.read_bytes()) == sha256_digest(
-            RESPONSES_RUNTIME_PATH.read_bytes()
-        )
-        assert argv[argv.index("--model-wire-api") + 1] == "responses"
+        if wire_api == "responses":
+            runtime_path = Path(argv[argv.index("python") + 1])
+            assert runtime_path == tmp_path / "attempt/runtime/responses_runtime.py"
+            assert sha256_digest(runtime_path.read_bytes()) == sha256_digest(
+                RESPONSES_RUNTIME_PATH.read_bytes()
+            )
+            assert argv[argv.index("--model-wire-api") + 1] == "responses"
+        else:
+            assert "are-benchmark" in argv
+        assert argv[argv.index("--hook-config") + 1] == str(hook_config)
         assert argv[argv.index("--scenario_timeout") + 1] == "30"
         assert kwargs["cwd"] == candidate
         assert kwargs["shell"] is False
@@ -66,9 +73,11 @@ def test_runner_uses_pinned_uv_argv_local_environment_and_releases_candidate(
         demo_filesystem_root=demo,
         agent="default",
         model="task-model",
-        model_provider="copilot",
-        model_wire_api="responses",
-        responses_runtime_sha256=sha256_digest(RESPONSES_RUNTIME_PATH.read_bytes()),
+        model_provider="copilot" if wire_api == "responses" else "openai",
+        model_wire_api=wire_api,
+        responses_runtime_sha256=(
+            sha256_digest(RESPONSES_RUNTIME_PATH.read_bytes()) if wire_api == "responses" else None
+        ),
         judge_model="judge-model",
         judge_provider="azure",
         benchmark_config="search",
