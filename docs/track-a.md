@@ -20,8 +20,10 @@ git fetch upstream
 Use a standalone clone under a writable parent directory. On Windows, use WSL2 and clone
 under its Linux home directory. Git, uv, internet access and Python 3.12 are required.
 The checked-in `uv.lock` pins AutoSaddler's dependencies. The launcher clones the adapted
-Meta-ARE repository at `395d1dd512add1e3aeb5a6a092490768b51e3ce5`, downloads only the profile's
-train and development splits, and prepares the approximately 260 MB demo filesystem.
+Meta-ARE repository at `395d1dd512add1e3aeb5a6a092490768b51e3ce5`, fetches GAIA2 from the
+pinned Hugging Face revision, and prepares the approximately 260 MB demo filesystem. The
+Hugging Face cache downloads capability-level files on first use. The provisioner writes
+only the configured train and development scenarios into the evaluator's dataset directory.
 
 To provision inputs without running any model:
 
@@ -56,6 +58,8 @@ The upstream AutoSaddler V2 runner omits the benchmark's `--hook-config` argumen
 passes the evaluated candidate's own `hook.json` to Meta-ARE. Inspect the attempt's `command.json`
 for the candidate worktree path and its `stdout.log` or `stderr.log` for hook-loading and matching
 messages when a candidate declares a nonempty Hook.
+
+To run Fair, switch to `baseline/v2-fair` and use the GAIA2 smoke command with a fresh run ID.
 
 ## Reproduce a run
 
