@@ -1,5 +1,22 @@
 # 🛠️ AutoSaddler: Automatic Harness Optimization with Durable Updates from Agent Execution Traces
 
+## Track A research repository
+
+This research repository starts from [Microsoft AutoSaddler V2 at `e841543`](https://github.com/microsoft/AutoSaddler/commit/e841543ce6cf6bdf690e65134b12a829ec9f66d1).
+On Linux or WSL2, install Git and [uv](https://docs.astral.sh/uv/getting-started/installation/) and run:
+
+```bash
+git clone https://github.com/qqnnhhdmpc666/autosaddler-research.git
+cd autosaddler-research
+uv run --locked --python 3.12 scripts/run_baseline.py smoke --run-id local-smoke
+```
+
+The local smoke run requires no API credentials and produces `result.json` and `experiment.json`
+under `outputs/v2-template/local-smoke/`. The [Track A runbook](docs/track-a.md) covers the real
+GAIA2 smoke and full training profiles, candidate Hooks, and version status.
+
+## Upstream AutoSaddler
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.12-3.14](https://img.shields.io/badge/Python-3.12--3.14-3776AB.svg?logo=python&logoColor=white)](https://www.python.org/)
 [![arXiv: 2608.23041](https://img.shields.io/badge/arXiv-2608.23041-b31b1b.svg?logo=arxiv&logoColor=white)](https://arxiv.org/abs/2608.23041)

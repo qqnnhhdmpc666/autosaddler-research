@@ -29,5 +29,9 @@ jobs:
           fi
       - name: Test
         run: uv run python -m pytest tests/ -v --tb=short
+      - name: Exercise the public quickstart
+        run: |
+          uv run --locked --python 3.12 scripts/run_baseline.py smoke --run-id ci-smoke
+          uv run --no-sync python -c 'import json, os; from pathlib import Path; p = Path("outputs/v2-template/ci-smoke"); assert json.loads((p / "result.json").read_text())["iterations"] == 1; assert json.loads((p / "experiment.json").read_text())["source_commit"] == os.environ["GITHUB_SHA"]'
       - name: Build distributions
         run: uv build

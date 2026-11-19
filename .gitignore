@@ -7,6 +7,12 @@ dist/
 build/
 logs/
 outputs/
+.env
+.env.*
+!.env.example
+working_dir/
+Meta-ARE/
+meta_are_data/
 
 # Datasets
 data/gaia2_full/
